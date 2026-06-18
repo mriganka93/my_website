@@ -6,7 +6,7 @@ export default function Blogs({ openBlog }) {
     <section className="blogs-section">
       {/* Big Blue Hero Section */}
       <div className="blogs-hero">
-        <h1>Blogs</h1>
+        <h1>Blog</h1>
         <p>Thoughts, experiments, and development notes</p>
       </div>
 
