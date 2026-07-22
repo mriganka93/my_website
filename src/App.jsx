@@ -23,36 +23,38 @@ function App() {
   }, [active]);
 
   // ========== IMPORTANT: Restore page/post from URL on load ==========
-  useEffect(() => {
-    const pathname = window.location.pathname;
+useEffect(() => {
+  // Support both normal path and hash-based fallback
+  let path = window.location.hash 
+    ? window.location.hash.slice(1)           // remove the #
+    : window.location.pathname;
 
-    // Remove the base path so we get a clean path like "/blog/my-slug"
-    let cleanPath = pathname;
-    if (basePath && pathname.startsWith(basePath)) {
-      cleanPath = pathname.slice(basePath.length) || "/";
+  // Remove base path if present
+  if (path.startsWith('/my_website')) {
+    path = path.replace('/my_website', '');
+  }
+
+  path = path.replace(/\/$/, '') || '/';
+
+  if (path.startsWith('/blog/')) {
+    const slug = path.split('/blog/')[1];
+    const foundPost = blogData.find((p) => p.slug === slug);
+    if (foundPost) {
+      setCurrentBlog(foundPost);
+      setActive('blogpost');
     }
-    cleanPath = cleanPath.replace(/\/$/, "") || "/"; // remove trailing slash
-
-    if (cleanPath.startsWith("/blog/")) {
-      const slug = cleanPath.split("/blog/")[1];
-      const foundPost = blogData.find((p) => p.slug === slug);
-      if (foundPost) {
-        setCurrentBlog(foundPost);
-        setActive("blogpost");
-      }
-    } else if (cleanPath === "/about") {
-      setActive("about");
-    } else if (cleanPath === "/projects") {
-      setActive("projects");
-    } else if (cleanPath === "/blog") {
-      setActive("blog");
-    } else if (cleanPath === "/contact") {
-      setActive("contact");
-    } else {
-      setActive("home");
-    }
-  }, []);
-
+  } else if (path === '/about') {
+    setActive('about');
+  } else if (path === '/projects') {
+    setActive('projects');
+  } else if (path === '/blog') {
+    setActive('blog');
+  } else if (path === '/contact') {
+    setActive('contact');
+  } else {
+    setActive('home');
+  }
+}, []);
   // Helper to update the browser URL without reloading
   const updateURL = (path) => {
     const fullPath = path === "/" ? basePath + "/" : `${basePath}${path}`;

@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Redirecting...</title>
+    <script>
+      // This is the GitHub Pages SPA fallback trick
+      const path = window.location.pathname;
+      const base = '/my_website';
+      
+      // Redirect to index.html while keeping the path
+      window.location.replace(base + '/#' + path.replace(base, ''));
+    </script>
+  </head>
+  <body>
+    Redirecting...
+  </body>
+</html>
