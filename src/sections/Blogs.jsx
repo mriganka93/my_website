@@ -17,13 +17,13 @@ export default function Blogs({ openBlog }) {
             <div className="blog-image">
               <img src={post.image} alt={post.title} />
             </div>
-            
             <div className="blog-text">
-              <span className="blog-date">{post.date} • {post.readTime}</span>
+              <span className="blog-date">
+                {post.date} • {post.readTime}
+              </span>
               <h3>{post.title}</h3>
               <p>{post.excerpt}</p>
-              
-              <button 
+              <button
                 className="learn-more-btn"
                 onClick={() => openBlog(post)}
               >

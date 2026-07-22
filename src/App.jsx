@@ -4,6 +4,7 @@ import Blogs from "./sections/Blogs";
 import About from "./sections/About";
 import Contact from "./sections/Contact";
 import BlogPost from "./sections/BlogPost";
+import blogData from "./data/blogData.json"; // ← Make sure this path is correct
 
 function App() {
   const [active, setActive] = useState("home");
@@ -12,19 +13,70 @@ function App() {
 
   const navItems = ["home", "about", "projects", "blog", "contact"];
 
+  // Vite automatically gives us the correct base path
+  // In production it becomes "/my_website/"
+  const basePath = import.meta.env.BASE_URL.replace(/\/$/, ""); // remove trailing slash
+
+  // Scroll to top on page change
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   }, [active]);
+
+  // ========== IMPORTANT: Restore page/post from URL on load ==========
+  useEffect(() => {
+    const pathname = window.location.pathname;
+
+    // Remove the base path so we get a clean path like "/blog/my-slug"
+    let cleanPath = pathname;
+    if (basePath && pathname.startsWith(basePath)) {
+      cleanPath = pathname.slice(basePath.length) || "/";
+    }
+    cleanPath = cleanPath.replace(/\/$/, "") || "/"; // remove trailing slash
+
+    if (cleanPath.startsWith("/blog/")) {
+      const slug = cleanPath.split("/blog/")[1];
+      const foundPost = blogData.find((p) => p.slug === slug);
+      if (foundPost) {
+        setCurrentBlog(foundPost);
+        setActive("blogpost");
+      }
+    } else if (cleanPath === "/about") {
+      setActive("about");
+    } else if (cleanPath === "/projects") {
+      setActive("projects");
+    } else if (cleanPath === "/blog") {
+      setActive("blog");
+    } else if (cleanPath === "/contact") {
+      setActive("contact");
+    } else {
+      setActive("home");
+    }
+  }, []);
+
+  // Helper to update the browser URL without reloading
+  const updateURL = (path) => {
+    const fullPath = path === "/" ? basePath + "/" : `${basePath}${path}`;
+    window.history.pushState({}, "", fullPath);
+  };
 
   const handleNavClick = (item) => {
     setActive(item);
     setIsMenuOpen(false);
     setCurrentBlog(null);
+
+    // Update URL so sharing works
+    if (item === "home") {
+      updateURL("/");
+    } else {
+      updateURL(`/${item}`);
+    }
   };
 
   const openBlog = (post) => {
     setCurrentBlog(post);
     setActive("blogpost");
+    // This is the key line that makes the shareable link work
+    updateURL(`/blog/${post.slug}`);
   };
 
   return (
@@ -56,7 +108,6 @@ function App() {
               </a>
             ))}
           </nav>
-
           {isMenuOpen && (
             <nav className="mobile-menu">
               {navItems.map((item) => (
@@ -76,7 +127,6 @@ function App() {
           )}
         </header>
       )}
-
       <div className="nav-line"></div>
 
       {/* PAGE CONTENT */}
@@ -89,11 +139,12 @@ function App() {
                   <h1>MRIGANKA SAIKIA</h1>
                   <div className="white-line"></div>
                   <p className="hero-intro">
-                    Software & Data Engineer with expertise in backend systems, databases, and analytics
+                    Software & Data Engineer with expertise in backend systems,
+                    databases, and analytics
                   </p>
                   <button
                     className="about-me-btn"
-                    onClick={() => setActive("about")}
+                    onClick={() => handleNavClick("about")}
                   >
                     About Me
                   </button>
@@ -108,7 +159,9 @@ function App() {
                   <h2 className="exploring-title">Currently Exploring</h2>
                   <ul className="exploring-list">
                     <li>Experimenting with local LLM</li>
-                    <li>Build and Launch my personal website. You're looking at it</li>
+                    <li>
+                      Build and Launch my personal website. You're looking at it
+                    </li>
                   </ul>
                 </div>
               </div>
@@ -138,7 +191,14 @@ function App() {
         )}
 
         {active === "blogpost" && currentBlog && (
-          <BlogPost post={currentBlog} onBack={() => setActive("blog")} />
+          <BlogPost
+            post={currentBlog}
+            onBack={() => {
+              updateURL("/blog");
+              setActive("blog");
+              setCurrentBlog(null);
+            }}
+          />
         )}
 
         {active === "contact" && (

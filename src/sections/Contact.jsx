@@ -14,7 +14,7 @@ const Contact = () => {
 
         <div className="contact-strips">
           <a 
-            href="mailto:mriganka.saikia@posteo.com" 
+            href="mailto:mriganka206@protonmail.com" 
             className="contact-strip"
           >
             <div className="strip-icon">
@@ -22,7 +22,7 @@ const Contact = () => {
             </div>
             <div className="strip-content">
               <h3>Email</h3>
-              <p>mriganka.saikia@posteo.com</p>
+              <p>mriganka206@protonmail.com</p>
             </div>
           </a>
 
