@@ -3,5 +3,12 @@ import react from '@vitejs/plugin-react'
 
 export default defineConfig({
   plugins:[react()],       // ← yahan comma nahi hona chahiye
-  base: '/my_website/'
+  base: '/my_website/',
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: undefined
+      }
+    }
+  }
 })
